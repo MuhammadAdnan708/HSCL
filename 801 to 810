@@ -1,0 +1,531 @@
+Here's the text converted into a Markdown file, word by word:
+
+```markdown
+# Page Address | T | P (Protection)
+
+**Figure 22.5 Page-file page-table entry.** The valid bit is zero.
+
+28 bits are used to index into a system data structure that indicates a file and  
+offset within the file for the page, and the lower 3 bits specify the page state.
+
+Invalid virtual addresses can also be in a number of temporary states that  
+are part of the paging algorithms. When a page is removed from a process  
+working set, it is moved either to the modified list (to be written to disk) or  
+directly to the standby list. If written to the standby list, the page is reclaimed  
+without being read from disk if it is needed again before it is moved to the free  
+list. When possible, the VM manager uses idle CPU cycles to zero pages on the  
+free list and move them to the zeroed list. Transition pages have been allocated  
+a physical page and are awaiting the completion of the paging I/O before the  
+PTE is marked as valid.
+
+Windows XP uses section objects to describe pages that are sharable  
+between processes. Each process has its own set of virtual page tables, but  
+the section object also includes a set of page tables containing the master (or  
+prototype) PTEs. When a PTE in a process page table is marked valid, it points  
+to the physical page frame containing the page, as it must on IA32 processors,  
+where the hardware MMU reads the page tables directly from memory. But  
+when a shared page is made invalid, the PTE is edited to point to the prototype  
+PTE associated with the section object.
+
+The page tables associated with a section object are virtual insofar as they  
+are created and trimmed as needed. The only prototype PTEs needed are  
+those that describe pages for which there is a currently mapped view. This  
+greatly improves performance and allows more efficient use of kernel virtual  
+addresses.
+
+The prototype PTE contains the page-frame address and the protection  
+and state bits. Thus, the first access by a process to a shared page generates a  
+page fault. After the first access, further accesses are performed in the normal  
+manner. If a process writes to a copy-on-write page marked read-only in the  
+PTE, the VM manager makes a copy of the page and marks the PTE writable,  
+and the process effectively does not have a shared page any longer. Shared  
+pages never appear in the page file but are instead found in the file system.
+
+The VM manager keeps track of all pages of physical memory in a page-  
+frame database. There is one entry for every page of physical memory in the  
+system. The entry points to the PTE, which in turn points to the page frame, so  
+the VM manager can maintain the state of the page. Page frames not referenced  
+by a valid PTE are linked to lists according to page type, such as zeroed,  
+modified, or free.
+
+If a shared physical page is marked as valid for any process, the page  
+cannot be removed from memory. The VM manager keeps a count of valid PTEs  
+for each page in the page-frame database. When the count goes to zero, the  
+physical page can be reused once its contents have been written back to disk  
+(if it was marked dirty).
+
+When a page fault occurs, the VM manager finds a physical page to hold  
+the data. For zero-on-demand pages, the first choice is to find a page that has  
+already been zeroed. If none is available, a page from the free list or standby  
+list is chosen, and the page is zeroed before proceeding. If the faulted page  
+has been marked as in transition, it is either already being read in from disk  
+or has been unmapped or trimmed and is still available on the standby or  
+modified list. The thread either waits for the I/O to complete or, in the latter  
+cases, reclaims the page from the appropriate list.
+
+Otherwise, an I/O must be issued to read the page in from the paging file  
+or file system. The VM manager tries to allocate an available page from either  
+the free list or the standby list. Pages in the modified list cannot be used until  
+they have been written back to disk and transferred to the standby list. If no  
+pages are available, the thread blocks until the working-set manager trims  
+pages from memory or a page in physical memory is unmapped by a process.
+
+Windows XP uses a per-process first-in, first-out (FIFO) replacement policy  
+to take pages from processes that are using more than their minimum working-  
+set size. Windows XP monitors the page faulting of each process that is at its  
+minimum working-set size and adjusts the working-set size accordingly. When  
+a process is started, it is assigned a default minimum working-set size of 50  
+pages. The VM manager replaces and trims pages in the working set of a process  
+according to their age. The age of a page is determined by how many trimming  
+cycles have occurred without the PTE. Trimmed pages are moved to the standby  
+or modified list, depending on whether the modified bit is set in the page's  
+PTE.
+
+The VM manager does not fault in only the page immediately needed.  
+Research shows that the memory referencing of a thread tends to have a  
+locality property; when a page is used, it is likely that adjacent pages will  
+be referenced in the near future. (Think of iterating over an array or fetching  
+sequential instructions that form the executable code for a thread.) Because of  
+locality, when the VM manager faults in a page, it also faults in a few adjacent  
+pages. This prefetching tends to reduce the total number of page faults. Writes  
+are also clustered to reduce the number of independent I/O operations.
+
+In addition to managing committed memory, the VM manager manages  
+each process's reserved memory, or virtual address space. Each process has an  
+associated splay tree that describes the ranges of virtual addresses in use and  
+what the use is. This allows the VM manager to fault in page tables as needed.  
+If the PTE for a faulting address does not exist, the VM manager searches for  
+the address in the process's tree of virtual address descriptors (VADs) and  
+uses this information to fill in the missing PTE and retrieve the page. In some  
+cases, a page-table page itself may not exist; such a page must be transparently  
+allocated and initialized by the VM manager.
+
+## 22.3.3.3. Process Manager
+
+The Windows XP process manager provides services for creating, deleting, and  
+using processes, threads, and jobs. It has no knowledge about parent-child  
+relationships or process hierarchies; those refinements are left to the particular  
+environmental subsystem that owns the process. The process manager is also  
+not involved in the scheduling of processes, other than setting the priorities and  
+affinities in processes and threads when they are created. Thread scheduling  
+takes place in the kernel dispatcher.
+
+Each process contains one or more threads. Processes themselves can be  
+collected together into large units called job objects; the use of job objects  
+allows limits on CPU usage, working-set size, and processor affinities that  
+control multiple processes at once. Job objects are used to manage large  
+datacenter machines.
+
+An example of process creation in the Win32 API environment is as follows.  
+When a Win32 API application calls CreateProcess():
+
+1. A message is sent to the Win32 API subsystem to notify it that the process  
+is being created.
+
+2. CreateProcess() in the original process then calls an API in the process  
+manager of the NT executive to actually create the process.
+
+3. The process manager calls the object manager to create a process object  
+and returns the object handle to Win32 API.
+
+4. Win32 API calls the process manager again to create a thread for the process  
+and returns handles to the new process and thread.
+
+The Windows XP APIs for manipulating virtual memory and threads and  
+for duplicating handles take a process handle, so subsystems can perform  
+operations on behalf of a new process without having to execute directly in  
+the new process's context. Once a new process is created, the initial thread  
+is created, and an asynchronous procedure call is delivered to the thread to  
+prompt the start of execution at the user-mode image loader. The loader is in  
+ntdll.dll, which is a link library automatically mapped into every newly created  
+process. Windows XP also supports a UNIX fork() style of process creation in  
+order to support the POSIX environmental subsystem. Although the Win32 API  
+environment calls the process manager from the client process, POSIX uses the  
+cross-process nature of the Windows XP APIs to create the new process from  
+within the subsystem process.
+
+The process manager also implements the queuing and delivery of asyn-  
+chronous procedure calls (APCs) to threads. APCs are used by the system to  
+initiate thread execution, complete I/O, terminate threads and processes, and  
+attach debuggers. User-mode code can also queue an APC to a thread for  
+delivery of signal-like notifications. To support POSIX, the process manager  
+provides APIs that send alerts to threads to unblock them from system calls.
+
+The debugger support in the process manager includes the capability to  
+suspend and resume threads and to create threads that begin in a suspended  
+mode. There are also process-manager APIs that get and set a thread's register  
+context and access another process's virtual memory.
+
+Threads can be created in the current process; they can also be injected into  
+another process. Within the executive, existing threads can temporarily attach  
+to another process. This method is used by worker threads that need to execute  
+in the context of the process originating a work request.
+
+The process manager also supports impersonation. A thread running in a  
+process with a security token belonging to one user can set a thread-specific  
+token belonging to another user. This facility is fundamental to the client-  
+server computing model, where services need to act on behalf of a variety of  
+clients with different security IDs.
+
+## 22.3.3.4 Local Procedure Call Facility
+
+The implementation of Windows XP uses a client-server model. The environ-  
+mental subsystems are servers that implement particular operating-system  
+personalities. The client-server model is used for implementing a variety  
+of operating-system services besides the environmental subsystems. Security  
+management, printer spooling, web services, network file systems, plug-and-  
+play, and many other features are implemented using this model. To reduce  
+the memory footprint, multiple services are often collected together into a few  
+processes, which then rely on the user-mode thread-pool facilities to share  
+threads and wait for messages (see Section 22.3.3.3).
+
+The operating system uses the local procedure call (LPC) facility to pass  
+requests and results between client and server processes within a single  
+machine. In particular, LPC is used to request services from the various  
+Windows XP subsystems. LPC is similar in many respects to the RPC mech-  
+anisms used by many operating systems for distributed processing across  
+networks, but LPC is optimized for use within a single system. The Windows  
+XP implementation of Open Software Foundation (OSF) RPC often uses LPC as  
+a transport on the local machine.
+
+LPC is a message-passing mechanism. The server process publishes a  
+globally visible connection-port object. When a client wants services from a  
+subsystem, it opens a handle to the subsystem's connection-port object and  
+sends a connection request to the port. The server creates a channel and returns  
+a handle to the client. The channel consists of a pair of private communication  
+ports: one for client-to-server messages and the other for server-to-client  
+messages. Communication channels support a callback mechanism, so the  
+client and server can accept requests when they would normally be expecting  
+a reply.
+
+When an LPC channel is created, one of three message-passing techniques  
+must be specified.
+
+1. The first technique is suitable for small messages (up to a couple  
+of hundred bytes). In this case, the port's message queue is used as  
+intermediate storage, and the messages are copied from one process to  
+the other.
+
+2. The second technique is for larger messages. In this case, a shared-  
+memory section object is created for the channel. Messages sent through  
+the port's message queue contain a pointer and size information referring  
+to the section object. This avoids the need to copy large messages. The  
+sender places data into the shared section, and the receiver views them  
+directly.
+
+3. The third technique uses the APIs that read and write directly into a  
+process's address space. The LPC provides functions and synchronization  
+so a server can access the data in a client.
+
+**Figure 22.6 File I/O.**
+
+The Win32 API window manager uses its own form of message passing  
+that is independent of the executive LPC facilities. When a client asks for a  
+connection that uses window-manager messaging, the server sets up three  
+objects: (1) a dedicated server thread to handle requests, (2) a 64-KB section  
+object, and (3) an event-pair object. An event-pair object is a synchronization  
+object that is used by the Win32 API subsystem to provide notification when  
+the client thread has copied a message to the Win32 API server, or vice versa.  
+The section object passes the messages, and the event-pair object performs  
+synchronization.
+
+Window-manager messaging has several advantages:
+
+- The section object eliminates message copying, since it represents a region  
+of shared memory.
+
+- The event-pair object eliminates the overhead of using the port object to  
+pass messages containing pointers and lengths.
+
+- The dedicated server thread eliminates the overhead of determining which  
+client thread is calling the server, since there is one server thread per client  
+thread.
+
+- The kernel gives scheduling preference to these dedicated server threads  
+to improve performance.
+
+## 22.3.3.5 I/O Manager
+
+The I/O manager is responsible for file systems, device drivers, and network  
+drivers. It keeps track of which device drivers, filter drivers, and file systems  
+are loaded, and it also manages buffers for I/O requests. It works with the  
+VM manager to provide memory-mapped file I/O and controls the Windows  
+XP cache manager, which handles caching for the entire I/O system. The I/O  
+manager is fundamentally asynchronous. Synchronous I/O is provided by  
+explicitly waiting for an I/O operation to complete. The I/O manager provides  
+several models of asynchronous I/O completion, including setting of events,  
+delivery of APCs to the initiating thread, and use of I/O completion ports, which  
+allow a single thread to process I/O completions from many other threads.
+
+Device drivers are arranged as a list for each device (called a driver or I/O  
+stack because of how device drivers are added). The I/O manager converts the  
+requests it receives into a standard form called an I/O request packet (IRP). It  
+then forwards the IRP to the first driver in the stack for processing. After each  
+driver processes the IRP, it calls the I/O manager either to forward it to the next  
+driver in the stack or, if all processing is finished, to complete the operation on  
+the IRP.
+
+Completions may occur in a different context from the original I/O request.  
+For example, if a driver is performing its part of an I/O operation and is forced  
+to block for an extended time, it may queue the IRP to a worker thread to  
+continue processing in the system context. In the original thread, the driver  
+returns a status indicating that the I/O request is pending so that the thread  
+can continue executing in parallel with the I/O operation. IRPs may also be  
+processed in interrupt-service routines and completed in an arbitrary context.  
+Because some final processing may need to happen in the context that initiated  
+the I/O, the I/O manager uses an APC to do final I/O-completion processing in  
+the context of the originating thread.
+
+The stack model is very flexible. As a driver stack is built, various drivers  
+have the opportunity to insert themselves into the stack as filter drivers.  
+Filter drivers can examine and potentially modify each I/O operation. Mount  
+management, partition management, and disk striping and mirroring are all  
+examples of functionality implemented using filter drivers that execute beneath  
+the file system in the stack. File-system filter drivers execute above the file  
+system and have been used to implement functionality such as hierarchical  
+storage management, single instancing of files for remote boot, and dynamic  
+format conversion. Third parties also use file-system filter drivers to implement  
+virus detection.
+
+Device drivers for Windows XP are written to the Windows Driver Model  
+(WDM) specification. This model lays out all the requirements for device drivers,  
+including how to layer filter drivers, share common code for handling power  
+and plug-and-play requests, build correct cancellation logic, and so forth.
+
+Because of the richness of the WDM, writing a full WDM device driver  
+for each new hardware device can involve an excessive amount of work.  
+Fortunately, the port/miniport model makes it unnecessary to do this. Within  
+a class of similar devices, such as audio drivers, SCSI devices, or Ethernet  
+controllers, each instance of a device shares a common driver for that class,  
+called a port driver. The port driver implements the standard operations for  
+the class and then calls device-specific routines in the device's miniport driver  
+to implement device-specific functionality.
+
+## 22.3.3.6 Cache Manager
+
+In many operating systems, caching is done by the file system. Instead,  
+Windows XP provides a centralized caching facility. The cache manager works  
+closely with the VM manager to provide cache services for all components  
+under the control of the I/O manager. Caching in Windows XP is based on files  
+rather than raw blocks.
+
+The size of the cache changes dynamically according to how much free  
+memory is available in the system. Recall that the upper 2 GB of a process's  
+address space comprise the system area; it is available in the context of all  
+processes. The VM manager allocates up to one-half of this space to the system  
+cache. The cache manager maps files into this address space and uses the  
+capabilities of the VM manager to handle file I/O.
+
+The cache is divided into blocks of 256 KB. Each cache block can hold a  
+view (that is, a memory-mapped region) of a file. Each cache block is described  
+by a virtual address control block (VACB) that stores the virtual address and  
+file offset for the view, as well as the number of processes using the view. The  
+VACBs reside in a single array maintained by the cache manager.
+
+For each open file, the cache manager maintains a separate VACB index  
+array that describes the caching for the entire file. This array has an entry for  
+each 256-KB chunk of the file; so, for instance, a 2-MB file would have an 8-entry  
+VACB index array. An entry in the VACB index array points to the VACB if that  
+portion of the file is in the cache; it is null otherwise. When the I/O manager  
+receives a file's user-level read request, the I/O manager sends an IRP to the  
+device-driver stack on which the file resides. The file system attempts to look  
+up the requested data in the cache manager (unless the request specifically asks  
+for a noncached read). The cache manager calculates which entry of that file's  
+VACB index array corresponds to the byte offset of the request. The entry either  
+points to the view in the cache or is invalid. If it is invalid, the cache manager  
+allocates a cache block (and the corresponding entry in the VACB array) and  
+maps the view into the cache block. The cache manager then attempts to copy  
+data from the mapped file to the caller's buffer. If the copy succeeds, the  
+operation is completed.
+
+If the copy fails, it does so because of a page fault, which causes the VM  
+manager to send a noncached read request to the I/O manager. The I/O manager  
+sends another request down the driver stack, this time requesting a paging  
+operation, which bypasses the cache manager and reads the data from the file  
+directly into the page allocated for the cache manager. Upon completion, the  
+VACB is set to point at the page. The data, now in the cache, are copied to the  
+caller's buffer, and the original I/O request is completed. Figure 22.6 shows an  
+overview of these operations.
+
+When possible, for synchronous operations on cached files, I/O is handled  
+by the fast I/O mechanism. This mechanism parallels the normal IRP-based  
+I/O but calls into the driver stack directly rather than passing down an IRP.  
+Because no IRP is involved, the operation should not block for an extended  
+period of time and cannot be queued to a worker thread. Therefore, when the  
+operation reaches the file system and calls the cache manager, the operation  
+fails if the information is not already in cache. The I/O manager then attempts  
+the operation using the normal IRP path.
+
+A kernel-level read operation is similar, except that the data can be accessed  
+directly from the cache, rather than being copied to a buffer in user space.  
+To use file-system metadata (data structures that describe the file system),  
+the kernel uses the cache manager's mapping interface to read the metadata.  
+To modify the metadata, the file system uses the cache manager's pinning  
+interface. Pinning a page locks the page into a physical-memory page frame  
+so that the VM manager cannot move or page out the page. After updating  
+the metadata, the file system asks the cache manager to unpin the page. A  
+modified page is marked dirty, and so the VM manager flushes the page to  
+disk. The metadata is stored in a regular file.
+
+To improve performance, the cache manager keeps a small history of read  
+requests and from this history attempts to predict future requests. If the cache  
+manager finds a pattern in the previous three requests, such as sequential access  
+forward or backward, it prefetches data into the cache before the next request is  
+submitted by the application. In this way, the application finds its data already  
+cached and does not need to wait for disk I/O. The Win32 API OpenFile() and  
+CreateFile() functions can be passed the FILE_FLAG_SEQUENTIAL_SCAN flag,  
+which is a hint to the cache manager to try to prefetch 192 KB ahead of the  
+thread's requests. Typically, Windows XP performs I/O operations in chunks of  
+64 KB or 16 pages; thus, this read-ahead is three times the normal amount.
+
+The cache manager is also responsible for telling the VM manager to flush  
+the contents of the cache. The cache manager's default behavior is write-back  
+caching: It accumulates writes for 4 to 5 seconds and then wakes up the cache-  
+writer thread. When write-through caching is needed, a process can set a flag  
+when opening the file, or the process can call an explicit cache-flush function.
+
+A fast-writing process could potentially fill all the free cache pages before  
+the cache-writer thread had a chance to wake up and flush the pages to disk.  
+The cache writer prevents a process from flooding the system in the following  
+way. When the amount of free cache memory becomes low, the cache manager  
+temporarily blocks processes attempting to write data and wakes the cache-  
+writer thread to flush pages to disk. If the fast-writing process is actually a  
+network redirector for a network file system, blocking it for too long could  
+cause network transfers to time out and be retransmitted. This retransmission  
+would waste network bandwidth. To prevent such waste, network redirectors  
+can instruct the cache manager to limit the backlog of writes in the cache.
+
+Because a network file system needs to move data between a disk and the  
+network interface, the cache manager also provides a DMA interface to move  
+the data directly. Moving data directly avoids the need to copy data through  
+an intermediate buffer.
+
+## 22.3.3.7 Security Reference Monitor
+
+Centralizing management of system entities in the object manager enables  
+Windows XP to use a uniform mechanism to perform run-time access validation  
+and audit checks for every user-accessible entity in the system. Whenever a  
+process opens a handle to an object, the security reference monitor (SRM)  
+checks the process's security token and the object's access-control list to see  
+whether the process has the necessary rights.
+
+The SRM is also responsible for manipulating the privileges in security  
+tokens. Special privileges are required for users to perform backup or restore  
+operations on file systems, overcome certain checks as an administrator, debug  
+processes, and so forth. Tokens can also be marked as being restricted in their  
+privileges so that they cannot access objects that are available to most users.  
+Restricted tokens are primarily used to restrict the damage that can be done by  
+execution of untrusted code.
+
+Another responsibility of the SRM is logging security audit events. A C-2  
+security rating requires that the system have the ability to detect and log all  
+attempts to access system resources so that it is easier to trace attempts at  
+unauthorized access. Because the SRM is responsible for making access checks,  
+it generates most of the audit records in the security-event log.
+
+## 22.3.3.8 Plug-and-Play and Power Managers
+
+The operating system uses the plug-and-play (PnP) manager to recognize  
+and adapt to changes in the hardware configuration. For PnP to work, both  
+the device and the driver must support the PnP standard. The PnP manager  
+automatically recognizes installed devices and detects changes in devices as the  
+system operates. The manager also keeps track of resources used by a device,  
+as well as potential resources that could be used, and takes care of loading  
+the appropriate drivers. This management of hardware resources — primarily  
+interrupts and I/O memory ranges—has the goal of determining a hardware  
+configuration in which all devices are able to operate.
+
+For example, if device B can use interrupt 5 and device A can use 5 or 7,  
+then the PnP manager will assign 5 to B and 7 to A. In previous versions, the  
+user might have had to remove device A and reconfigure it to use interrupt 7  
+before installing device B. The user thus had to study system resources before  
+installing new hardware and had to determine which devices were using which  
+hardware resources. The proliferation of PCMCIA cards, laptop docks, and USB,  
+IEEE 1394, Infiniband, and other hot-pluggable devices also dictates the support  
+of dynamically configurable resources.
+
+The PnP manager handles dynamic reconfiguration as follows. First, it  
+gets a list of devices from each bus driver (for example, PCI, USB). It loads  
+the installed driver (or installs one, if necessary) and sends an add-device  
+request to the appropriate driver for each device. The PnP manager figures out  
+the optimal resource assignments and sends a start-device request to each  
+driver, along with the resource assignment for the device. If a device needs to  
+be reconfigured, the PnP manager sends a query-stop request, which asks the  
+driver whether the device can be temporarily disabled. If the driver can disable  
+the device, then all pending operations are completed, and new operations are  
+prevented from starting. Next, the PnP manager sends a stop request; it can  
+then reconfigure the device with another start-device request.
+
+The PnP manager also supports other requests, such as query-remove.  
+This request, which is used when the user is getting ready to eject a PCMCIA  
+device, operates in a fashion similar to query-stop. The surprise-remove  
+request is used when a device fails or, more likely, when a user removes a  
+PCMCIA device without stopping it first. The remove request tells the driver to  
+stop using the device and release all resources allocated to it.
+
+Windows XP supports sophisticated power management. Although these  
+facilities are useful for home systems to reduce power consumption, their  
+primary application is for ease of use (quicker access) and extending the battery  
+life of laptops. The system and individual devices can be moved to low-power  
+mode (called standby or sleep mode) when not in use, so the battery is primarily  
+directed at physical memory (RAM) data retention. The system can turn itself  
+back on when packets are received from the network, a phone line to a modem  
+rings, or a user opens a laptop or pushes a soft power button. Windows XP  
+can also hibernate a system by storing physical memory contents to disk and  
+completely shutting down the machine, then restoring the system at a later  
+point before execution continues.
+
+Further strategies for reducing power consumption are supported as well.  
+Rather than allowing it to spin in a processor loop when the CPU is idle,  
+Windows XP moves the system to a state requiring lower power consumption.  
+If the CPU is underutilized, Windows XP reduces the CPU clock speed, which  
+can save significant power.
+
+## 22.3.3.9 Registry
+
+Windows XP keeps much of its configuration information in an internal  
+database called the registry. A registry database is called a hive. There are  
+separate hives for system information, default user preferences, software  
+installation, and security. Because the information in the system hive is  
+required in order to boot the system, the registry manager is implemented  
+as a component of the executive.
+
+Every time the system successfully boots, it saves the system hive as last  
+known good. If the user installs software, such as a device driver, that produces  
+a system-hive configuration that will not boot, the user can usually boot using  
+the last-known-good configuration.
+
+Damage to the system hive from installing third-party applications and  
+drivers is so common that Windows XP has a component called system restore  
+that periodically saves the hives, as well as other software states like driver  
+executables and configuration files, so that the system can be restored to  
+a previously working state in cases where the system boots but no longer  
+operates as expected.
+
+## 22.3.3.10 Booting
+
+The booting of a Windows XP PC begins when the hardware powers on and  
+the BIOS begins executing from ROM. The BIOS identifies the system device  
+to be booted and loads and executes the bootstrap loader from the front of  
+the disk. This loader knows enough about the file-system format to load the  
+NTLDR program from the root directory of the system device. NTLDR is used to  
+determine which boot device contains the operating system. Next, the NTLDR  
+loads in the HAL library, the kernel, and the system hive from the boot device.  
+From the system hive, it determines what device drivers are needed to boot  
+the system (the boot drivers) and loads them. Finally, NTLDR begins kernel  
+execution.
+
+The kernel initializes the system and creates two processes. The system  
+process contains all the internal worker threads and never executes in user  
+mode. The first user-mode process created is SMSS, which is similar to the  
+INIT (initialization) process in UNIX. SMSS does further initialization of the  
+system, including establishing the paging files and loading device drivers, and  
+creates the WINLOGON and CSRSS processes. CSRSS is the Win32 API subsystem.  
+WINLOGON brings up the rest of the system, including the LSASS security  
+subsystem and the remaining services needed to run the system.
+
+The system optimizes the boot process by pre-loading files from disk based  
+on previous boots of the system. Disk access patterns at boot are also used to  
+lay out system files on disk to reduce the number of I/O operations required.  
+The processes required to start the system are reduced by grouping services  
+into a smaller number of processes.

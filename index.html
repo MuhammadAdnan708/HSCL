@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Haider Sports Cricket League 2026</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #1a1a2e;
+      --secondary: #0f4c75;
+      --accent: #fb6233;
+      --gold: #daa520;
+      --light-bg: #f5f3ff;
+      --card-bg: #ffffff;
+      --text-dark: #2a2a3e;
+      --text-light: #6b7280;
+      --border: #e5e7eb;
+      --success: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, var(--light-bg) 0%, #f0e8ff 100%);
+      color: var(--text-dark);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 4rem 0 5rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 3px solid var(--accent);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(251, 98, 51, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(10deg); }
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .logo {
+      width: 140px;
+      height: 140px;
+      background: linear-gradient(135deg, var(--accent), #ff8c42);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 900;
+      color: white;
+      box-shadow: 0 20px 60px rgba(251, 98, 51, 0.3);
+      transform: perspective(1000px) rotateX(5deg);
+      animation: slideDown 0.8s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-50px) scale(0.8); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .season-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      border: 2px solid var(--gold);
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      backdrop-filter: blur(10px);
+    }
+
+    @keyframes fadeInUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      position: relative;
+      transition: all 0.3s ease;
+      padding: 0.5rem 0;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gold);
+      transition: width 0.4s ease;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    main {
+      padding: 5rem 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
+
+    .section-divider {
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      margin: 0 auto;
+    }
+
+    /* ===== TEAMS GRID ===== */
+    .groups-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 2.5rem;
+      margin-top: 3rem;
+    }
+
+    .group-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .group-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 60px rgba(251, 98, 51, 0.15);
+      border-color: var(--accent);
+    }
+
+    .group-header {
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .group-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .team-list {
+      padding: 1.5rem;
+    }
+
+    .team-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+      background: linear-gradient(135deg, rgba(15, 76, 117, 0.04), rgba(251, 98, 51, 0.04));
+      border-radius: 10px;
+      border-left: 3px solid var(--accent);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .team-item:hover {
+      transform: translateX(6px);
+      background: linear-gradient(135deg, rgba(15, 76, 117, 0.08), rgba(251, 98, 51, 0.08));
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .team-number {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      color: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(251, 98, 51, 0.2);
+    }
+
+    .team-details {
+      flex: 1;
+    }
+
+    .team-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--primary);
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+
+    .team-city {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    .team-captain {
+      display: inline-block;
+      background: rgba(251, 98, 51, 0.1);
+      color: var(--accent);
+      padding: 0.3rem 0.7rem;
+      border-radius: 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: 1px solid rgba(251, 98, 51, 0.2);
+    }
+
+    /* ===== MODALS ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 0;
+      animation: fadeIn 0.3s ease;
+      overflow: hidden;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.4s ease;
+      position: relative;
+      border: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Scrollbar کو hide کریں */
+    .modal-content::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+
+    .modal-content::-webkit-scrollbar-thumb {
+      background: transparent;
+    }
+
+    .modal-content {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 1.5rem 2rem;
+      border-bottom: 2px solid var(--accent);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 12px 12px 0 0;
+      flex-shrink: 0;
+    }
+
+    .modal-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin: 0;
+      flex: 1;
+    }
+
+    .close-btn {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      z-index: 1001;
+      box-shadow: 0 2px 8px rgba(251, 98, 51, 0.3);
+      line-height: 1;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .close-btn:hover {
+      background: #e84c1a;
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 0 4px 12px rgba(251, 98, 51, 0.4);
+    }
+
+    .modal-content-body {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Scrollbar کو hide کریں */
+    .modal-content-body::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+
+    .modal-content-body::-webkit-scrollbar-thumb {
+      background: transparent;
+    }
+
+    .modal-content-body {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    /* ===== SCHEDULE TABLE ===== */
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0;
+      font-size: 0.88rem;
+    }
+
+    .schedule-table th {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 0.8rem;
+      text-align: center;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 15;
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .schedule-table td {
+      padding: 0.75rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .schedule-table tr:hover {
+      background: rgba(251, 98, 51, 0.06);
+    }
+
+    .rest-day {
+      background: rgba(218, 165, 32, 0.08) !important;
+      color: var(--primary);
+      font-weight: 600;
+      border-left: 3px solid var(--gold);
+      padding: 0.75rem !important;
+    }
+
+    /* ===== PLAYER MODAL ===== */
+    #player-list {
+      padding: 0;
+      list-style: none;
+      margin: 0;
+    }
+
+    #player-list li {
+      padding: 0.75rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      transition: all 0.2s ease;
+      color: var(--text-dark);
+    }
+
+    #player-list li:before {
+      content: '▸ ';
+      color: var(--accent);
+      font-weight: 700;
+      margin-right: 0.4rem;
+    }
+
+    #player-list li:hover {
+      background: rgba(251, 98, 51, 0.04);
+      padding-left: 1.6rem;
+    }
+
+    #player-list li:last-child {
+      border-bottom: none;
+    }
+
+    /* ===== FORM STYLING ===== */
+    .match-result-form {
+      background: rgba(15, 76, 117, 0.04);
+      padding: 1.5rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-top: 1.5rem;
+    }
+
+    .match-result-form h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 1.2rem;
+      margin-top: 0;
+      font-weight: 700;
+    }
+
+    .match-result-form input,
+    .match-result-form select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      background: white;
+    }
+
+    .match-result-form input:focus,
+    .match-result-form select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(251, 98, 51, 0.08);
+      outline: none;
+    }
+
+    .button-line {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1.2rem;
+    }
+
+    button {
+      padding: 0.7rem 1.2rem;
+      font-weight: 600;
+      font-size: 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Space Grotesk', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    button[onclick="submitMatch()"] {
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      color: white;
+    }
+
+    button[onclick="submitMatch()"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 76, 117, 0.3);
+    }
+
+    button[onclick="resetPoints()"] {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    button[onclick="resetPoints()"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    button[onclick="downloadExcel()"] {
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: white;
+    }
+
+    button[onclick="downloadExcel()"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    button[onclick="generateKnockout()"] {
+      background: linear-gradient(135deg, var(--gold), #cd9c00);
+      color: white;
+    }
+
+    button[onclick="generateKnockout()"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3);
+    }
+
+    /* ===== POINTS TABLE ===== */
+    .points-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0;
+      background: var(--card-bg);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .points-table th {
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      color: white;
+      padding: 0.8rem;
+      text-align: center;
+      font-weight: 600;
+      border-bottom: 2px solid var(--accent);
+      font-size: 0.88rem;
+    }
+
+    .points-table td {
+      padding: 0.7rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+      font-size: 0.88rem;
+    }
+
+    .points-table tr:nth-child(even) {
+      background: rgba(15, 76, 117, 0.01);
+    }
+
+    .points-table tr:hover {
+      background: rgba(251, 98, 51, 0.04);
+    }
+
+    /* ===== KNOCKOUT BRACKET ===== */
+    #knockoutBracket {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      border: none;
+      margin-top: 1rem;
+      box-shadow: none;
+    }
+
+    #knockoutBracket h3 {
+      color: var(--accent);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      margin: 0.8rem 0;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    #knockoutBracket ol {
+      margin-left: 1.2rem;
+      padding: 0;
+    }
+
+    #knockoutBracket li {
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+      font-weight: 500;
+      padding: 0.3rem 0;
+      border-left: 2px solid var(--accent);
+      padding-left: 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    #knockoutBracket p {
+      margin: 0.6rem 0;
+      padding: 0.8rem;
+      background: rgba(15, 76, 117, 0.04);
+      border-radius: 6px;
+      border-left: 3px solid var(--accent);
+      font-size: 0.85rem;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 4rem 0 2rem;
+      margin-top: 6rem;
+      border-top: 3px solid var(--accent);
+    }
+
+    .footer-content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: -1px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--accent);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .social-link {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .social-link:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-5px);
+      border-color: white;
+    }
+
+    .copyright {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      .section-title h2 {
+        font-size: 2rem;
+      }
+
+      .groups-container {
+        grid-template-columns: 1fr;
+      }
+
+      .logo {
+        width: 100px;
+        height: 100px;
+        font-size: 2.2rem;
+      }
+
+      .schedule-table td, .schedule-table th {
+        padding: 0.7rem;
+        font-size: 0.85rem;
+      }
+
+      .footer-links {
+        gap: 1.5rem;
+        flex-direction: column;
+      }
+
+      .button-line {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="container header-content">
+      <div class="logo">HSCL</div>
+      <h1>Haider Sports Cricket League</h1>
+      <p class="subtitle">Manga Cricket Tournament</p>
+      <div class="season-badge">🏆 Season 2026</div>
+      <div class="nav-links">
+        <a href="#" class="nav-link" id="groups-link">Teams</a>
+        <a href="#" class="nav-link" id="schedule-link">Schedule</a>
+        <a href="#" class="nav-link" id="openResultModal">Standings</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main id="main-content">
+    <div class="container">
+      <div class="section-title">
+        <h2>Tournament Teams</h2>
+        <div class="section-divider"></div>
+      </div>
+
+      <div class="groups-container">
+        <div class="group-card">
+          <div class="group-header">
+            <h3>All Teams</h3>
+          </div>
+          <div class="team-list">
+            <div class="team-item">
+              <div class="team-number">1</div>
+              <div class="team-details">
+                <span class="team-name">Manga Rose</span>
+                <span class="team-city">📍 Manga Mandi</span>
+                <span class="team-captain">👑 Captain: Shahid</span>
+              </div>
+            </div>
+            <div class="team-item">
+              <div class="team-number">2</div>
+              <div class="team-details">
+                <span class="team-name">King XI</span>
+                <span class="team-city">📍 Manga Mandi</span>
+                <span class="team-captain">👑 Captain: Aftab</span>
+              </div>
+            </div>
+            <div class="team-item">
+              <div class="team-number">3</div>
+              <div class="team-details">
+                <span class="team-name">Kashan King</span>
+                <span class="team-city">📍 Manga Mandi</span>
+                <span class="team-captain">👑 Captain: Kashif</span>
+              </div>
+            </div>
+            <div class="team-item">
+              <div class="team-number">4</div>
+              <div class="team-details">
+                <span class="team-name">Manga Gymkhana</span>
+                <span class="team-city">📍 Manga Mandi</span>
+                <span class="team-captain">👑 Captain: Babar</span>
+              </div>
+            </div>
+            <div class="team-item">
+              <div class="team-number">5</div>
+              <div class="team-details">
+                <span class="team-name">Unique Star</span>
+                <span class="team-city">📍 Manga Mandi</span>
+                <span class="team-captain">👑 Captain: Chand</span>
+              </div>
+            </div>
+            <div class="team-item">
+              <div class="team-number">6</div>
+              <div class="team-details">
+                <span class="team-name">Star XI</span>
+                <span class="team-city">📍 Manga Mandi</span>
+                <span class="team-captain">👑 Captain: Mohsin</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- SCHEDULE MODAL -->
+  <div class="modal" id="schedule-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🏏 Tournament Schedule 2026</h2>
+        <button class="close-btn" id="close-schedule">&times;</button>
+      </div>
+      <div class="modal-content-body">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Match</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>10-05-26</td><td>Unique Star vs Manga Gymkhana</td><td>12:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: Kashan King, King XI, Star XI, Manga Rose</td></tr>
+
+            <tr><td>17-05-26</td><td>Kashan King vs Manga Rose</td><td>09:00 AM</td></tr>
+            <tr><td>17-05-26</td><td>King XI vs Star XI</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: Unique Star, Manga Gymkhana</td></tr>
+
+            <tr><td>24-05-26</td><td>Star XI vs Manga Gymkhana</td><td>09:00 AM</td></tr>
+            <tr><td>24-05-26</td><td>King XI vs Unique Star</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: Kashan King, Manga Rose</td></tr>
+
+            <tr><td>31-05-26</td><td>Manga Rose vs Manga Gymkhana</td><td>09:00 AM</td></tr>
+            <tr><td>31-05-26</td><td>Kashan King vs Unique Star</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: King XI, Star XI</td></tr>
+
+            <tr><td>07-06-26</td><td>King XI vs Kashan King</td><td>09:00 AM</td></tr>
+            <tr><td>07-06-26</td><td>Star XI vs Manga Rose</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: Unique Star, Manga Gymkhana</td></tr>
+
+            <tr><td>14-06-26</td><td>Manga Gymkhana vs King XI</td><td>09:00 AM</td></tr>
+            <tr><td>14-06-26</td><td>Unique Star vs Star XI</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: Kashan King, Manga Rose</td></tr>
+
+            <tr><td>21-06-26</td><td>Manga Rose vs Unique Star</td><td>09:00 AM</td></tr>
+            <tr><td>21-06-26</td><td>Kashan King vs Manga Gymkhana</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: King XI, Star XI</td></tr>
+
+            <tr><td>28-06-26</td><td>Star XI vs Kashan King</td><td>09:00 AM</td></tr>
+            <tr><td>28-06-26</td><td>King XI vs Manga Rose</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: Unique Star, Manga Gymkhana</td></tr>
+
+            <tr><td>05-07-26</td><td>Unique Star vs Manga Gymkhana</td><td>09:00 AM</td></tr>
+            <tr><td>05-07-26</td><td>King XI vs Manga Rose</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: Kashan King, Star XI</td></tr>
+
+            <tr><td>12-07-26</td><td>Star XI vs Manga Gymkhana</td><td>09:00 AM</td></tr>
+            <tr><td>12-07-26</td><td>Kashan King vs Manga Rose</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: King XI, Unique Star</td></tr>
+
+            <tr><td>19-07-26</td><td>Unique Star vs Kashan King</td><td>09:00 AM</td></tr>
+            <tr><td>19-07-26</td><td>King XI vs Star XI</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: Manga Rose, Manga Gymkhana</td></tr>
+
+            <tr><td>26-07-26</td><td>Manga Rose vs Manga Gymkhana</td><td>09:00 AM</td></tr>
+            <tr><td>26-07-26</td><td>King XI vs Unique Star</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: Kashan King, Star XI</td></tr>
+
+            <tr><td>02-08-26</td><td>Kashan King vs Star XI</td><td>02:00 PM</td></tr>
+            <tr class="rest-day"><td colspan="3">REST: King XI, Manga Rose, Manga Gymkhana, Unique Star</td></tr>
+
+            <tr class="rest-day"><td colspan="3">🏆 LEAGUE COMPLETE - KNOCKOUTS BEGIN 🏆</td></tr>
+
+            <tr class="rest-day"><td colspan="3">🎯 Semi Final: 1st vs 2nd</td></tr>
+            <tr><td>09-08-26</td><td>1st vs 2nd</td><td>12:00 PM</td></tr>
+
+            <tr class="rest-day"><td colspan="3">🎯 Qualifier 1: 3rd vs 4th</td></tr>
+            <tr><td>12-08-26</td><td>3rd vs 4th</td><td>12:00 PM</td></tr>
+
+            <tr class="rest-day"><td colspan="3">🎯 Qualifier 2: SF Loser vs Q1 Winner</td></tr>
+            <tr><td>15-08-26</td><td>SF Loser vs Q1 Winner</td><td>12:00 PM</td></tr>
+
+            <tr class="rest-day"><td colspan="3">🏆 FINAL 🏆</td></tr>
+            <tr><td>19-08-26</td><td>SF Winner vs Q2 Winner</td><td>12:00 PM</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYER MODAL -->
+  <div class="modal" id="player-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="player-modal-title">Team Players</h2>
+        <button class="close-btn" id="close-player">&times;</button>
+      </div>
+      <div class="modal-content-body">
+        <ul id="player-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- POINTS TABLE MODAL -->
+  <div class="modal" id="resultModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📊 Tournament Standings</h2>
+        <button class="close-btn" id="closeResultModal">&times;</button>
+      </div>
+      <div class="modal-content-body">
+        <table class="points-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Team</th>
+              <th>MP</th>
+              <th>W</th>
+              <th>L</th>
+              <th>PTS</th>
+              <th>NRR</th>
+            </tr>
+          </thead>
+          <tbody id="points-table-body">
+          </tbody>
+        </table>
+
+        <div class="match-result-form">
+          <h3>Enter Match Result</h3>
+          <select id="teamA"><option disabled selected>Team A</option></select>
+          <input type="number" id="teamARuns" placeholder="Team A Runs" />
+          <input type="number" id="teamAOvers" placeholder="Overs (e.g 20.0)" step="0.1" />
+
+          <select id="teamB"><option disabled selected>Team B</option></select>
+          <input type="number" id="teamBRuns" placeholder="Team B Runs" />
+          <input type="number" id="teamBOvers" placeholder="Overs (e.g 20.0)" step="0.1" />
+
+          <div class="button-line">
+            <button onclick="submitMatch()">Submit Result</button>
+            <button onclick="resetPoints()">Reset Table</button>
+            <button onclick="downloadExcel()">Export Excel</button>
+          </div>
+        </div>
+
+        <div id="knockoutBracket">
+          <button onclick="generateKnockout()">Generate Knockout Bracket</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-logo">HSCL</div>
+      <div class="footer-links">
+        <a href="#" class="footer-link">Home</a>
+        <a href="#" class="footer-link">Teams</a>
+        <a href="#" class="footer-link" id="schedule-link2">Schedule</a>
+        <a href="#" class="footer-link" id="openResultModal2">Standings</a>
+      </div>
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="copyright">© 2026 Haider Sports Cricket League. All Rights Reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    // Team Players Data
+    const teamPlayers = {
+      "Manga Rose": ["Shahid","Meher Hamza","Iqbal","Sahir","Ahmad","Junaid","Hamza","Mubeen","Naeem","Umair","Rizwan","RAJAB","Hassan","Ibrar","Amir","Faizii"],
+      "King XI": ["Aftab","Naseem","Kamran","Awais","Faisal","Imran","Waqar","Sohail","Touseef","Shoaib","Ali Hussain","Mohsan","Ijaz","Riaz","Irfan","Asad abbas"],
+      "Kashan King": ["Kashif","Imran","Ahmad rehmani","Jawaid","Rashid","Moqeem","Asif jutt","Waqar","Asif Ali","Talha mayo","Waseem","Asif saho","Saftain","Razzaq","Qurban","Ali dad"],
+      "Manga Gymkhana": ["Babar","M Murtaza","Nadir Ali","M hamza","M Farooq","Hbk","M Tahir","Fakhar Khan","M shezad","Khalid","Zia ur Rehman","Yasir Khan","M Ali","Randawa","Sharafat","Mustafa"],
+      "Unique Star": ["Chand","Waleed hashmi","Waheed vb","Kashif","M Waseem","Abdaal butt","Asad","Shahzad prince","Shahid","Baba","Nazim waraich","Ishraq Afridi","Sufian","Mubashar","Majid lefty","Imran"],
+      "Star XI": ["Mohsin","Hassan","Kamran","Mehboob","Nadeem","Haris","Azhar","Aqib","Sajjad","Kashif","Sohail","Umer","Rizwan","Ghulam Rasool","Ghulam mustafa"]
+    };
+
+    const groups = {
+      "Teams": ["Manga Rose","King XI","Kashan King","Manga Gymkhana","Unique Star","Star XI"]
+    };
+
+    const teams = {};
+
+    for (let group in groups) {
+      groups[group].forEach(team => {
+        teams[team] = {
+          group: group,
+          matches: 0, wins: 0, losses: 0, points: 0,
+          runsScored: 0, oversFaced: 0,
+          runsConceded: 0, oversBowled: 0,
+          nrr: 0
+        };
+      });
+    }
+
+    // Modal Functions
+    const scheduleLink = document.getElementById('schedule-link');
+    const scheduleLink2 = document.getElementById('schedule-link2');
+    const scheduleModal = document.getElementById('schedule-modal');
+    const closeSchedule = document.getElementById('close-schedule');
+
+    [scheduleLink, scheduleLink2].forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        scheduleModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    closeSchedule.addEventListener('click', () => {
+      scheduleModal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    });
+
+    scheduleModal.addEventListener('click', (e) => {
+      if (e.target === scheduleModal) {
+        scheduleModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // Player Modal
+    const playerModal = document.getElementById('player-modal');
+    const closePlayer = document.getElementById('close-player');
+    const playerList = document.getElementById('player-list');
+    const playerModalTitle = document.getElementById('player-modal-title');
+
+    document.querySelectorAll('.team-name').forEach(el => {
+      el.addEventListener('click', () => {
+        const teamName = el.innerText.trim();
+        const players = teamPlayers[teamName];
+        if (players) {
+          playerModalTitle.innerText = `${teamName} Players`;
+          playerList.innerHTML = players.map(p => `<li>${p}</li>`).join("");
+          playerModal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    });
+
+    closePlayer.addEventListener('click', () => {
+      playerModal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    });
+
+    playerModal.addEventListener('click', (e) => {
+      if (e.target === playerModal) {
+        playerModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // Results Modal
+    const resultModal = document.getElementById("resultModal");
+    const openModalBtn = document.getElementById("openResultModal");
+    const openModalBtn2 = document.getElementById("openResultModal2");
+    const closeModalBtn = document.getElementById("closeResultModal");
+
+    [openModalBtn, openModalBtn2].forEach(btn => {
+      btn.onclick = () => {
+        resultModal.classList.add('active');
+        renderPointsTable();
+        document.body.style.overflow = 'hidden';
+      };
+    });
+
+    closeModalBtn.onclick = () => {
+      resultModal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    };
+
+    resultModal.addEventListener('click', (e) => {
+      if (e.target === resultModal) {
+        resultModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+    // Populate dropdowns
+    window.onload = () => {
+      const selects = [document.getElementById("teamA"), document.getElementById("teamB")];
+      selects.forEach(select => {
+        for (let team in teams) {
+          const option = document.createElement("option");
+          option.value = team;
+          option.textContent = team;
+          select.appendChild(option.cloneNode(true));
+        }
+      });
+      loadFromStorage();
+      renderPointsTable();
+      const savedKnockout = localStorage.getItem("knockout");
+      if (savedKnockout) {
+        showKnockout(JSON.parse(savedKnockout));
+      }
+    };
+
+    function submitMatch() {
+      const teamA = document.getElementById("teamA").value;
+      const teamB = document.getElementById("teamB").value;
+      const aRuns = parseInt(document.getElementById("teamARuns").value);
+      const aOvers = parseFloat(document.getElementById("teamAOvers").value);
+      const bRuns = parseInt(document.getElementById("teamBRuns").value);
+      const bOvers = parseFloat(document.getElementById("teamBOvers").value);
+
+      if (!teamA || !teamB || teamA === teamB || isNaN(aRuns) || isNaN(aOvers) || isNaN(bRuns) || isNaN(bOvers)) {
+        alert("Please enter valid match result.");
+        return;
+      }
+
+      updateMatch(teamA, teamB, aRuns, aOvers, bRuns, bOvers);
+      renderPointsTable();
+      saveToStorage();
+      document.getElementById("teamARuns").value = "";
+      document.getElementById("teamAOvers").value = "";
+      document.getElementById("teamBRuns").value = "";
+      document.getElementById("teamBOvers").value = "";
+      alert("Match result submitted successfully!");
+    }
+
+    function updateMatch(tA, tB, aR, aO, bR, bO) {
+      const A = teams[tA];
+      const B = teams[tB];
+
+      A.matches++; B.matches++;
+      A.runsScored += aR; A.oversFaced += aO;
+      A.runsConceded += bR; A.oversBowled += bO;
+
+      B.runsScored += bR; B.oversFaced += bO;
+      B.runsConceded += aR; B.oversBowled += aO;
+
+      if (aR > bR) {
+        A.wins++; B.losses++; A.points += 2;
+      } else {
+        B.wins++; A.losses++; B.points += 2;
+      }
+
+      calculateNRR(tA);
+      calculateNRR(tB);
+    }
+
+    function calculateNRR(team) {
+      const t = teams[team];
+      const runRateFor = t.runsScored / t.oversFaced;
+      const runRateAgainst = t.runsConceded / t.oversBowled;
+      t.nrr = parseFloat((runRateFor - runRateAgainst).toFixed(3));
+    }
+
+    function renderPointsTable() {
+      const body = document.getElementById("points-table-body");
+      body.innerHTML = "";
+
+      const sorted = Object.entries(teams)
+        .map(([name, data]) => [name, data])
+        .sort((a, b) => b[1].points - a[1].points || b[1].nrr - a[1].nrr);
+
+      sorted.forEach(([team, data], idx) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${team}</td>
+          <td>${data.matches}</td>
+          <td>${data.wins}</td>
+          <td>${data.losses}</td>
+          <td>${data.points}</td>
+          <td>${data.nrr}</td>
+        `;
+        body.appendChild(row);
+      });
+    }
+
+    function saveToStorage() {
+      localStorage.setItem("pointsData", JSON.stringify(teams));
+    }
+
+    function loadFromStorage() {
+      const data = JSON.parse(localStorage.getItem("pointsData"));
+      if (data) {
+        for (let team in data) {
+          if (teams[team]) {
+            teams[team] = { ...teams[team], ...data[team] };
+          }
+        }
+      }
+    }
+
+    function downloadExcel() {
+      const wb = XLSX.utils.book_new();
+      const data = [["#", "Team", "MP", "W", "L", "PTS", "NRR"]];
+      const sorted = Object.entries(teams)
+        .map(([name, teamData]) => [name, teamData])
+        .sort((a, b) => b[1].points - a[1].points || b[1].nrr - a[1].nrr);
+
+      sorted.forEach(([team, dataObj], i) => {
+        data.push([i + 1, team, dataObj.matches, dataObj.wins, dataObj.losses, dataObj.points, dataObj.nrr]);
+      });
+
+      const sheet = XLSX.utils.aoa_to_sheet(data);
+      XLSX.utils.book_append_sheet(wb, sheet, "Points Table");
+      XLSX.writeFile(wb, "HSCL_Points_Table.xlsx");
+    }
+
+    function resetPoints() {
+      if (!confirm("Are you sure you want to reset all data?")) return;
+      for (let team in teams) {
+        teams[team] = {
+          ...teams[team],
+          matches: 0, wins: 0, losses: 0, points: 0,
+          runsScored: 0, oversFaced: 0,
+          runsConceded: 0, oversBowled: 0,
+          nrr: 0
+        };
+      }
+      localStorage.removeItem("knockout");
+      localStorage.removeItem("pointsData");
+      document.getElementById("knockoutBracket").innerHTML = "";
+      renderPointsTable();
+    }
+
+    function generateKnockout() {
+      const allTeams = Object.keys(teams)
+        .map(name => ({ name, ...teams[name] }))
+        .sort((a, b) => b.points - a.points || b.nrr - a.nrr);
+
+      if (allTeams.length < 6) {
+        alert("Not enough teams!");
+        return;
+      }
+
+      const knockout = {
+        "Semi Final": `${allTeams[0].name} vs ${allTeams[1].name}`,
+        "Qualifier 1": `${allTeams[2].name} vs ${allTeams[3].name}`,
+        "Qualifier 2": `SF Loser vs Q1 Winner`,
+        "Final": `SF Winner vs Q2 Winner`
+      };
+
+      localStorage.setItem("knockout", JSON.stringify(knockout));
+      showKnockout(knockout, allTeams);
+    }
+
+    function showKnockout(knockout, standings) {
+      let knockoutHTML = `
+        <h3>🏆 PSL-STYLE KNOCKOUT BRACKET</h3>
+        <div style="background: linear-gradient(135deg, rgba(15, 76, 117, 0.05), rgba(251, 98, 51, 0.05)); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--accent); margin-bottom: 1.5rem;">
+          <h4 style="color: var(--primary); margin-top: 0; margin-bottom: 1rem;">📊 Final League Standings:</h4>
+          <ol style="margin-left: 1.5rem;">
+            ${standings.map((t, i) => `<li style="margin-bottom: 0.5rem;"><strong>${t.name}</strong> - ${t.points} pts (NRR: ${t.nrr})</li>`).join('')}
+          </ol>
+        </div>
+        <div style="margin-top: 1.5rem;">
+          <p style="margin: 1rem 0; padding: 1rem; background: rgba(15, 76, 117, 0.05); border-radius: 10px; border-left: 4px solid var(--secondary);"><strong style="color: var(--secondary);">⚡ Semi Final:</strong> ${knockout["Semi Final"]} → Winner to Final</p>
+          <p style="margin: 1rem 0; padding: 1rem; background: rgba(251, 98, 51, 0.05); border-radius: 10px; border-left: 4px solid var(--accent);"><strong style="color: var(--accent);">⚡ Qualifier 1:</strong> ${knockout["Qualifier 1"]} → Winner to Q2</p>
+          <p style="margin: 1rem 0; padding: 1rem; background: rgba(218, 165, 32, 0.1); border-radius: 10px; border-left: 4px solid var(--gold);"><strong style="color: var(--gold);">⚡ Qualifier 2:</strong> ${knockout["Qualifier 2"]} → Winner to Final</p>
+          <p style="margin: 1rem 0; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 10px; border-left: 4px solid var(--success);"><strong style="color: var(--success);">🏆 FINAL:</strong> ${knockout["Final"]}</p>
+        </div>
+      `;
+      document.getElementById("knockoutBracket").innerHTML = knockoutHTML;
+    }
+  </script>
+</body>
+</html>

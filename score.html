@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cricket Scorebook</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f1f1f1;
+    }
+
+    .scorebook {
+      max-width: 1300px;
+      margin: auto;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #c62828;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .header .brand {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .header .brand span {
+      font-size: 12px;
+      display: block;
+    }
+
+    .header .title {
+      background: #2e7d32;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .details {
+      background-color: #fffbe6;
+      padding: 15px;
+      border: 1px solid #ffecb3;
+      margin-top: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .details .row {
+      margin-bottom: 6px;
+    }
+
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 13px;
+    }
+
+    .score-table th,
+    .score-table td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+    }
+
+    .score-table th {
+      background: #e3f2fd;
+      color: #0d47a1;
+      font-weight: bold;
+    }
+
+    .extras-section {
+      background-color: #e8f5e9;
+      margin-top: 20px;
+      padding: 10px 15px;
+      border-left: 4px solid #4caf50;
+      border-radius: 6px;
+    }
+
+    .extras-section h3 {
+      margin-top: 0;
+      color: #2e7d32;
+    }
+
+    .footer-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 20px;
+      gap: 20px;
+    }
+
+    .footer-section {
+      background-color: #f3e5f5;
+      padding: 15px;
+      border-left: 4px solid #8e24aa;
+      border-radius: 6px;
+      font-size: 14px;
+      flex: 2;
+    }
+
+    .runs-counter {
+      background: #fff3e0;
+      padding: 15px;
+      border-left: 4px solid #ff9800;
+      border-radius: 8px;
+      flex: 1;
+    }
+
+    .runs-counter h3 {
+      margin-top: 0;
+      color: #e65100;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .grid span {
+      display: inline-block;
+      width: 35px;
+      height: 35px;
+      line-height: 35px;
+      text-align: center;
+      border: 1px solid #ccc;
+      background: #ffffff;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="scorebook">
+    <div class="header">
+      <div class="brand">GUIDER <span>INNOVENTURES PVT. LTD.</span></div>
+      <div class="title">CRICKET SCOREBOOK</div>
+    </div>
+
+    <div class="details">
+      <div class="row"><strong>Competition:</strong> _____________</div>
+      <div class="row"><strong>Match Between:</strong> _____________ &nbsp;&nbsp; <strong>Versus:</strong> _____________</div>
+      <div class="row"><strong>Played At:</strong> _____________ &nbsp;&nbsp; <strong>Date:</strong> _____________</div>
+      <div class="row"><strong>Toss Won By:</strong> _____________ &nbsp;&nbsp; <strong>Elected To:</strong> _____________</div>
+      <div class="row"><strong>Innings Of:</strong> _____________ &nbsp;&nbsp; <strong>Overs:</strong> _____________</div>
+      <div class="row"><strong>Pitch Type:</strong> ☐ Rough ☐ Cement ☐ Turf ☐ Matting</div>
+      <div class="row"><strong>Ball Type:</strong> ☐ Tennis ☐ Leather ☐ Other</div>
+    </div>
+
+    <table class="score-table">
+      <thead>
+        <tr>
+          <th>Time <br>In/Out</th>
+          <th>Batsman</th>
+          <th>Runs<br>As Scored</th>
+          <th>4s</th>
+          <th>6s</th>
+          <th>Balls<br>Faced</th>
+          <th>Min<br>Played</th>
+          <th>How Out</th>
+          <th>Fielder</th>
+          <th>Bowler</th>
+          <th>Total<br>Runs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1.</td><td colspan="10"></td></tr>
+        <tr><td>2.</td><td colspan="10"></td></tr>
+        <tr><td>3.</td><td colspan="10"></td></tr>
+        <tr><td>4.</td><td colspan="10"></td></tr>
+        <tr><td>5.</td><td colspan="10"></td></tr>
+        <tr><td>6.</td><td colspan="10"></td></tr>
+        <tr><td>7.</td><td colspan="10"></td></tr>
+        <tr><td>8.</td><td colspan="10"></td></tr>
+        <tr><td>9.</td><td colspan="10"></td></tr>
+        <tr><td>10.</td><td colspan="10"></td></tr>
+        <tr><td>11.</td><td colspan="10"></td></tr>
+      </tbody>
+    </table>
+
+    <<!-- ... (same as before up to the extras-section) -->
+
+<div class="extras-section">
+  <h3>EXTRAS</h3>
+  <p><strong>Wides:</strong> ___ &nbsp; <strong>Byes:</strong> ___ &nbsp; <strong>Leg Byes:</strong> ___ &nbsp; <strong>No Balls:</strong> ___ &nbsp; <strong>Penalties:</strong> ___</p>
+  <p><strong>Boundaries:</strong> ______________________________________</p>
+</div>
+
+<!-- 🏏 Bowlers Table -->
+<table class="score-table" style="margin-top: 20px;">
+  <thead>
+    <tr>
+      <th>Bowler</th>
+      <th>Overs</th>
+      <th>Maidens</th>
+      <th>Runs</th>
+      <th>Wickets</th>
+      <th>Wides</th>
+      <th>No Balls</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+
+<!-- ... (footer-section and runs-counter as before) -->
+
+
+    <div class="footer-wrapper">
+      <!-- Footer Section -->
+      <div class="footer-section">
+        <p><strong>Fall of Wickets:</strong> ____________________________________________</p>
+        <p><strong>Overs & Runs at a Glance:</strong> ______________________________________</p>
+        <p><strong>Total Score:</strong> ___ Runs for ___ Wickets in ___ Overs in ___ Minutes</p>
+        <p><strong>Player of the Match:</strong> ________________________________________</p>
+        <p><strong>Result:</strong> ______________________ &nbsp;&nbsp; <strong>Match Won By:</strong> ______________________</p>
+        <p><strong>Tie/Draw:</strong> ☐ Yes ☐ No</p>
+        <p><strong>Signature:</strong> Scorer: __________ &nbsp; Losing Captain: __________ &nbsp; Umpires: __________</p>
+      </div>
+
+      <!-- Run Count Section -->
+      <div class="runs-counter">
+        <h3>Runs Count</h3>
+        <div class="grid" id="runGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const grid = document.getElementById('runGrid');
+    for (let i = 1; i <= 50; i++) {
+      let span = document.createElement('span');
+      span.textContent = i;
+      grid.appendChild(span);
+    }
+
+    const extras = [100, 125, 150, 175, 200, 250];
+    extras.forEach(num => {
+      let span = document.createElement('span');
+      span.textContent = num;
+      grid.appendChild(span);
+    });
+  </script>
+</body>
+</html>
